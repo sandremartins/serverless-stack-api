@@ -1,0 +1,31 @@
+# NOTE: atualiza isso com seu service name
+service: notes-api
+
+# Cria um pacote otimizado para nossas funções
+package:
+  individually: true
+
+plugins:
+  - serverless-bundle # Package de nossas funções com Webpack
+  - serverless-offline
+  - serverless-dotenv-plugin # Carrega .env como variáveis ​​de ambiente
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  stage: dev
+  region: us-east-1
+  # Para carregar variáveis de ambiente externamente, 
+  # renomeie env.example para .env e descomente a linha a seguir. 
+  # Além disso, certifique-se de não enviar seu .env.
+  #
+  #environment:
+  SAMPLE_ENV_VAR: ${env:SAMPLE_ENV_VAR}
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - http:
+          path: hello
+          method: get
