@@ -57,7 +57,7 @@ functions:
           authorizer: aws_iam
   get:
     # Define um endpoint de API HTTP que chama a função principal em get.js
-    # - path: url path é /notes/{id}
+    # - path: o caminho do url é /notes/{id}
     # - method: GET request
     handler: get.main
     events:
@@ -66,3 +66,40 @@ functions:
           method: get
           cors: true
           authorizer: aws_iam
+  list:
+    # Define um endpoint de API HTTP que chama a função principal em list.js
+    # - path: o caminho do url é /notes
+    # - method: GET request
+    handler: list.main
+    events:
+      - http:
+          path: notes
+          method: get
+          cors: true
+          authorizer: aws_iam
+  update:
+    # Define um endpoint de API HTTP que chama a função principal em update.js
+    # - path: caminho da url é /notes/{id}
+    # - method: PUT request
+    handler: update.main
+    events:
+      - http:
+          path: notes/{id}
+          method: put
+          cors: true
+          authorizer: aws_iam
+  delete:
+    # Define um endpoint de API HTTP que chama a função principal em delete.js
+    # - path: caminho da url é /notes/{id}
+    # - method: DELETE request
+    handler: delete.main
+    events:
+      - http:
+          path: notes/{id}
+          method: delete
+          cors: true
+          authorizer: aws_iam
+# Cria nossos recursos com modelos separados do CloudFormation
+resources:
+  # Erros de gateway de API
+  - ${file(resources/api-gateway-errors.yml)}
