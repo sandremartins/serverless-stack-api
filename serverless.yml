@@ -1,5 +1,5 @@
 # NOTE: atualiza isso com seu service name
-service: notes-api
+service: sandre-notes-api
 
 # Cria um pacote otimizado para nossas funções
 package:
@@ -12,20 +12,46 @@ plugins:
 
 provider:
   name: aws
-  runtime: nodejs10.x
-  stage: dev
-  region: us-east-1
+  runtime: nodejs12.x
+  stage: prod
+  region: sa-east-1
   # Para carregar variáveis de ambiente externamente, 
   # renomeie env.example para .env e descomente a linha a seguir. 
   # Além disso, certifique-se de não enviar seu .env.
   #
   #environment:
-  SAMPLE_ENV_VAR: ${env:SAMPLE_ENV_VAR}
+  #SAMPLE_ENV_VAR: ${env:SAMPLE_ENV_VAR}
+
+  # Essas variáveis ​​de ambiente são disponibilizadas para nossas funções process.env.
+  environment:
+    tableName: notes
+
+  # 'iamRoleStatements' define a política de permissão para a função Lambda. 
+  # Neste caso, as funções do Lambda são concedidas com permissões para acessar o DynamoDB.
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Scan
+        - dynamodb:Query
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:DescribeTable
+      Resource: "arn:aws:dynamodb:sa-east-1:*:*"
 
 functions:
-  hello:
-    handler: handler.hello
+  # Define um endpoint de API HTTP que chama a função principal em create.js 
+  # - path: o caminho do url é / notas 
+  # - method: solicitação POST
+  # - cors: habilitado CORS (Cross-Origin Resource Sharing) para cross-browser 
+  # chamada de API de domínio 
+  # - authorizer: autenticar usando a função AWS IAM
+  create:
+    handler: create.main
     events:
       - http:
-          path: hello
-          method: get
+          path: notes
+          method: post
+          cors: true
+          authorizer: aws_iam
